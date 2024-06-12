@@ -107,27 +107,27 @@ If you're here from CSC-270, you might be a little nervous that you have to writ
 
 This step of code compilation will bridge the gap between code in C and code in LLVM IR, completing the transformation from a program string to usable code. This may seem like a daunting task, but you've been provided with a set of tools that will make writing this out much easier.\\
 \\
-In \textit{ir\_codegen\_core.rs}, the IRGenerator struct is what will be used to generate IR code from a given AST, and it uses another struct called ResourcePools. ResourcePools is the link between your code and generating LLVM code. For example, if you need to create an integer, the \textit{create\_integer()} function of the resource pool will handle this for you.\\
+In \textit{core.rs}, the IRGenerator struct is what will be used to generate IR code from a given AST, and it uses another struct called IRManager. IRManager is the link between your code and generating LLVM code. For example, if you need to create an integer, the \textit{create\_integer()} function of the resource pool will handle this for you.\\
 \\
 At the heart of this is the tag system. When you call \textit{create\_integer()} for example, what it will give back is a ValueTag. Think of tags as unique names that are linked to the object you've created, so when you call \textit{create\_integer()} it creates the value, stores it, and then gives you a tag that represents it, sort of like a ticket you can use to get your dry cleaning.\\
 \\
 Another key idea is the basic block. A basic block is simply a section of code that you can write instructions into. The code above for the while loop has four basic blocks: entry, while\_cond, while\_body, and while\_end. Each are separate basic blocks that code is written inside.
 
 
-\section*{code walk: ir\_codegen\_core.rs}
-This is the file where the main router function that handles generating IR is. This time, a fair amount of this will be given to you completed, as the focus of this part is learning how to generate the IR and not how to write the router function. You can see that the main router match statement is all unimplemented though, and this is where you come in. You must write the functions that the router points to, and generate IR for these cases appropriately. 
+\section*{code walk: core.rs}
+This is the file where the main router function that handles generating IR is. This time, a fair amount of this will be given to you completed, as the focus of this part is learning how to generate IR. You must design the IR generation loop (remember the parser!), write the functions that the router points to, and generate IR for these cases appropriately. 
 
-\section*{code walk: ir\_primitive.rs}
+\section*{code walk: primitive.rs}
 This file contains the functions that generate IR for data types and literal values like integers.
 
-\section*{code walk: ir\_statement.rs}
-This file contains the functions that generate IR for statements like returns and breaks, as well as variable assignment.
+\section*{code walk: statement.rs}
+This file contains the functions that generate IR for statements like returns and breaks, as well as variable assignment. Anything which doesn't evaluate to a value goes here.
 
-\section*{code walk: ir\_block.rs}
-This file contains the functions that generate IR for complex code blocks like block statements and loops.
+\section*{code walk: block.rs}
+This file contains the functions that generate IR for complex code blocks like if statements and loops, anything which generates basic blocks.
 
-\section*{code walk: ir\_top\_level.rs}
-This file contains the functions that generate IR for function definitions and other top level statements. This is probably the most difficult to implement.
+\section*{code walk: store.rs}
+This file contains an implementation of a temporary store to help you keep track of variable tags. This is given, you don't have to do anything here. There are functions in IRGenerator which bind to this structure for you.
 
 
 \pagebreak
@@ -141,7 +141,7 @@ This file contains the functions that generate IR for function definitions and o
         \item Keep track of tags! Each tag is your ticket to something you created in resource pools.
         \item Remember to create a basic block every time you need a new section of code.
         \item Remember that at this stage you've already done semantic analysis, you may assume the AST you're recursing over is always correctly formatted at this point!
-        \item \textcolor{red}{IMPORTANT:} Due to the way we use recursion to go over our AST, we had to implement thread safety for the resource pools. What this means for you is that every time you use a function of resource pools, you must first get the resource pools, try to lock the resource pools (expecting a panic error is ok here because otherwise we couldn't continue anyway), work with the resource pools through the lock object, and drop the lock when you're done. A diagram of this process in code is shown below and you can see this for yourself in action in the \textit{generate\_literal\_ir()} function.
+        \item \textcolor{red}{IMPORTANT:} To simulate a real production environment, this compiler will eventually contain multithreading, and so we had to implement thread safety for the resource pools. What this means for you is that every time you use a function of resource pools, you must first get the resource pools, try to lock the resource pools (expecting a panic error is ok here because otherwise we couldn't continue anyway), work with the resource pools through the lock object, and drop the lock when you're done. A diagram of this process in code is shown below and you can see this for yourself in action in the \textit{generate\_literal\_ir()} function.
 
         
     \end{enumerate}
