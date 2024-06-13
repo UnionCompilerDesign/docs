@@ -42,7 +42,7 @@
 %	ASSIGNMENT INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Assignment \#2: Building the Symbol Table Stack} % Assignment title
+\title{Assignment \#3: Building the Symbol Table Stack} % Assignment title
 
 
 \date{DUE DATE} % Due date
@@ -82,7 +82,7 @@ In compiler design, a symbol table is a data structure used by a compiler to kee
     \centering
     \includegraphics[width=0.5\textwidth]{dragon.jpeg}
     \caption{A more comprehensive explanation of the symbol table and the symbol table stack can be found in sections 1.2.7 (page 11) and 2.7 (page 85) of the dragon book.}
-    \label{fig:sts_structure}
+    \label{fig:symbol_table_structure}
 \end{figure}
 \pagebreak
 %----------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ This file defines the modules related to the symbol table stack and makes them a
 You don't have to do anything to this file.
 
 \section*{core.rs:}
-This file contains the core logic for generating the symbol table stack and routing AST nodes to appropriate handlers. While the structure for \textbf{SymbolValue, SymbolInfo, SymbolTable, and SymbolTableStack} are given, additional functions for utilizing these struct's and enum's will need to be implemented. You will also need to implement the following core functions:
+This file contains the core logic for generating the symbol table stack and routing AST nodes to appropriate handlers. While the structure for \textbf{Symbol, SymbolTable, and SymbolTableStack} are given, additional functions for utilizing these struct's and enum's will need to be implemented. You will also need to implement the following core functions:
 \begin{itemize}
     \item \textbf{gen\_sym\_table\_stack}: Drives the symbol table stack generation process and returns the original AST and the generated symbol table stack, or errors if any.
     \item \textbf{sym\_table\_stack\_router}: Routes the proper top-level expression for an ASTNode.
@@ -115,20 +115,14 @@ This file contains the core logic for generating the symbol table stack and rout
 This file contains the implementation of block statements (e.g., functions, loops) within the symbol table stack. You will need to implement the following functions:
 \begin{itemize}
     \item \textbf{sym\_table\_fn}: Adds a function type to the current scope.
-    \item \textbf{sym\_table\_struct}: Adds a struct type to the current scope.
-    \item \textbf{sym\_table\_enum}: Adds an enum type to the current scope.
-    \item \textbf{sym\_table\_while}: Adds a while loop to the current scope.
-    \item \textbf{sym\_table\_do\_while}: Adds a do-while loop to the current scope.
-    \item \textbf{sym\_table\_for}: Adds a for loop to the current scope.
-    \item \textbf{sym\_table\_if\_else}: Adds an if-else block to the current scope.
-    \item \textbf{sym\_table\_switch}: Adds a switch statement to the current scope.
+    \item \textbf{sym\_table\_for}: Adds a for loop to the current scope. For loops are handled differently than other loops, so it gets its own function. 
+    \item \textbf{sym\_table\_block}: Adds a loop block to the current scope. 
 \end{itemize}
 \pagebreak
 \section*{statement.rs:}
-This file contains functions that define statements and variables within blocks. The following functions need to be implemented:
+This file contains functions that define statements and variables within blocks. The following function need to be implemented:
 \begin{itemize}
     \item \textbf{sym\_table\_init}: Adds a new variable into the current scope.
-    \item \textbf{sym\_table\_assign}: Assigns a new value to a variable in the current scope.
 \end{itemize}
 
 \section*{base\_tests.rs:}
@@ -138,10 +132,7 @@ This file contains test definitions for base case tests. Your job is to implemen
 This file should be used as a test suite for combination tests of elements tested in \textbf{base\_tests.rs}. Make sure to comprehensively test these combinations. 
 
 \section*{edge\_tests.rs:}
-This file should be used as a test suite for boundary cases. This suite should comprehensively test the addition and functionality of NodeTypes within the Symbol Table Stack. 
-
-\section*{error\_tests.rs:}
-This file should be used as a test suite for error handling. Comprehensively test that every instance that may raise an error is handled properly. 
+This file should be used as a test suite for boundary cases. This suite should comprehensively test the addition and functionality of \textbf{NodeType} within the Symbol Table Stack. 
 
 \pagebreak
 
@@ -149,10 +140,11 @@ This file should be used as a test suite for error handling. Comprehensively tes
 
 \begin{problem}
     \begin{enumerate}
+        \item Before beginning, look through and understand all files within \textbf{AST}, along with those in core.rs for STS (\textbf{Symbol, SymbolTable, SymbolTableStack} ).
         \item Do not change any of the function signatures, i.e., leave all parameters, parameter types, and return types as you found them.
         \item Follow all instructions given in the comments where they exist, and take any potential hints into consideration when making your design.
         \item Remember you are managing a stack of symbol tables, each representing a different scope. Ensure that your implementation correctly handles scope transitions.
-        \item Use the \textbf{SymbolInfo}, \textbf{SymbolTable}, and \textbf{SymbolTableStack} structs effectively to maintain the integrity of the symbol table stack.
+        \item Use \textbf{Symbol}, \textbf{SymbolTable}, and \textbf{SymbolTableStack} structs effectively to maintain the integrity of the symbol table stack.
         \item Maintain clear and consistent error handling. Use \textbf{Result} and \textbf{ErrorType} to propagate errors appropriately.
     \end{enumerate}
 \end{problem}
@@ -163,7 +155,7 @@ This file should be used as a test suite for error handling. Comprehensively tes
     It might not be obvious how to manipulate symbol tables effectively. Here are some tips on how to do this.
     \\
     \begin{enumerate}
-        \item When adding a new symbol to a table, ensure you use the \textbf{add} method of \textbf{SymbolTable}. For example, if you want to add a function, create a \textbf{SymbolInfo} object and use \textbf{SymbolTable::add}.
+        \item When adding a new symbol to a table, ensure you use the \textbf{add} method of \textbf{SymbolTable}. For example, if you want to add a function, create a \textbf{Symbol} object and use \textbf{SymbolTable::add}.
         \item When transitioning scopes, use the \textbf{push} and \textbf{pop} methods of \textbf{SymbolTableStack} to manage the stack of tables. For example, when entering a new scope, push a new table onto the stack.
         \item To retrieve symbols from the current scope, use the \textbf{get} method of \textbf{SymbolTable}. Ensure you handle cases where the symbol might not be found.
         \item Maintain clear and consistent error handling. Use \textbf{Result} and \textbf{ErrorType} to propagate errors appropriately.
